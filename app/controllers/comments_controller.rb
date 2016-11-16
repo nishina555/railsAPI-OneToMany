@@ -1,9 +1,11 @@
 class CommentsController < ApplicationController
   before_action :set_comment, only: [:show, :update, :destroy]
 
-  # GET /comments
+  # GET /comments -> /events/:event_id/comments
   def index
-    @comments = Comment.all
+    #@comments = Comment.all
+    @event = Event.where(:id => params[:event_id]).first
+    @comments = @event.comments.all
 
     render json: @comments
   end
@@ -13,9 +15,11 @@ class CommentsController < ApplicationController
     render json: @comment
   end
 
-  # POST /comments
+  # POST /comments -> /events/:event_id/comments
   def create
-    @comment = Comment.new(comment_params)
+    # @comment = Comment.new(comment_params)
+    @event = Event.where(:id => params[:event_id]).first
+    @comment = @event.comments.build(comment_params)
 
     if @comment.save
       render json: @comment, status: :created, location: @comment
@@ -24,7 +28,7 @@ class CommentsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /comments/1
+  # PATCH/PUT /comments/1 -> /events/:event_id/comments/1
   def update
     if @comment.update(comment_params)
       render json: @comment
@@ -33,7 +37,7 @@ class CommentsController < ApplicationController
     end
   end
 
-  # DELETE /comments/1
+  # DELETE /comments/1 -> /events/:event_id/comments/1
   def destroy
     @comment.destroy
   end
@@ -41,7 +45,9 @@ class CommentsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_comment
-      @comment = Comment.find(params[:id])
+      #@comment = Comment.find(params[:id])
+      @event = Event.where(:id => params[:event_id]).first
+      @comment = @event.comments.where(:id => params[:id]).first
     end
 
     # Only allow a trusted parameter "white list" through.
